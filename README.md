@@ -1,4 +1,4 @@
-# Customer Retention and Value Analysis
+# Customer Retention and Value Analytics
 
 How well does an online retailer keep its customers, and where does its revenue
 actually come from? This project answers both questions from two years of real
@@ -96,6 +96,37 @@ commercial team can actually act on.
   the largest leak is right after the first order. A welcome series or a second
   purchase incentive would lift the whole retention curve.
 
+## My contribution
+
+I did the full analysis workflow: cleaning the transaction data, building the
+cohort retention logic, creating the RFM segmentation, writing SQL versions of
+the main checks, producing the figures and turning the results into business
+recommendations.
+
+The main thing I wanted to show is that customer analytics should lead to a
+decision. In this case, the strongest actions are protecting high value
+customers, reactivating At Risk customers and improving the second purchase
+journey.
+
+## Interactive dashboard
+
+`dashboard/app.py` is a Streamlit app that lets a non technical user explore the
+same analysis: headline metrics, monthly revenue, the cohort retention heatmap
+and the RFM segments, with a segment inspector at the bottom.
+
+<table>
+  <tr>
+    <td align="center"><img src="figures/dashboard_overview.png" width="820"/><br/><sub>Headline metrics and monthly revenue</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="figures/dashboard_cohort.png" width="820"/><br/><sub>Interactive cohort retention table</sub></td>
+  </tr>
+</table>
+
+```bash
+streamlit run dashboard/app.py
+```
+
 ## Repository layout
 
 ```
@@ -138,3 +169,8 @@ lives in a warehouse rather than a spreadsheet.
 ## Tech stack
 
 Python, pandas, NumPy, Matplotlib, Streamlit, SQL.
+
+## License
+
+The project code is released under the MIT License. The dataset follows the
+terms of the original UCI Machine Learning Repository source.
