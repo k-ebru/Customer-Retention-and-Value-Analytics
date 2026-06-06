@@ -1,0 +1,140 @@
+# Customer Retention and Value Analysis
+
+How well does an online retailer keep its customers, and where does its revenue
+actually come from? This project answers both questions from two years of real
+UK transaction data, using cohort retention and RFM segmentation, with SQL
+versions of the same logic and an interactive dashboard.
+
+I built it to practise the kind of analysis a product or commercial team relies
+on day to day: not just "how much did we sell" but "which customers matter, are
+they staying, and who is slipping away".
+
+## The data
+
+Online Retail II from the UCI Machine Learning Repository: real transactions
+from a UK based online retailer between December 2009 and December 2011. After
+cleaning (removing cancellations, missing customer ids, and non positive
+quantities or prices) the analysis covers:
+
+* **805,549** transaction line items
+* **5,878** customers across **41** countries
+* **36,969** orders
+* **£17.7M** total revenue
+
+The raw file is downloaded separately; see [`data/README.md`](data/README.md).
+
+## Headline findings
+
+**A quarter of customers drive roughly two thirds of revenue.** The Champions
+segment is 25 percent of customers but 69 percent of revenue. Protecting this
+group is worth far more than a typical acquisition push.
+
+**The business is acquisition heavy.** Average retention one month after the
+first purchase is about 21 percent, and it stays near 18 to 20 percent a year
+later. Most customers buy once and do not return, so the customers who do come
+back are disproportionately valuable.
+
+**There is a clear, costed retention opportunity.** The At Risk segment is 824
+customers who used to buy often but have not purchased recently. They still
+account for about £1.6M (9 percent) of revenue. Re-engaging them protects
+existing revenue rather than chasing new customers.
+
+### Segment summary
+
+| Segment | Customers | Customer share | Revenue | Revenue share |
+|---|---:|---:|---:|---:|
+| Champions | 1,482 | 25.2% | £12.29M | 69.3% |
+| Loyal | 1,221 | 20.8% | £2.55M | 14.4% |
+| At Risk | 824 | 14.0% | £1.63M | 9.2% |
+| Lost / Hibernating | 1,523 | 25.9% | £0.67M | 3.8% |
+| New / Promising | 443 | 7.5% | £0.39M | 2.2% |
+| Needs Attention | 385 | 6.5% | £0.21M | 1.2% |
+
+<table>
+  <tr>
+    <td align="center"><img src="figures/segment_revenue.png" width="460"/><br/><sub>Revenue share by segment</sub></td>
+    <td align="center"><img src="figures/segment_scatter.png" width="420"/><br/><sub>Segments by recency and frequency</sub></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2"><img src="figures/cohort_retention.png" width="820"/><br/><sub>Monthly cohort retention: each row is an acquisition month, each column is months since first purchase</sub></td>
+  </tr>
+</table>
+
+## Method
+
+### Cohort retention
+
+Each customer is assigned to a cohort by the calendar month of their first
+purchase. For every later month I measure the share of that cohort that bought
+again. Reading across a row of the heatmap shows how a single intake of
+customers decays over time; reading down a column compares the same month of
+life across cohorts. This is the honest way to see retention, because it never
+mixes new and old customers in a single average.
+
+### RFM segmentation
+
+For each customer I compute three numbers:
+
+* **Recency**: days since their last purchase
+* **Frequency**: number of distinct orders
+* **Monetary**: total revenue
+
+Each is scored 1 to 5 by quintile, and customers are grouped into business
+readable segments (Champions, Loyal, At Risk, and so on) from their recency and
+frequency scores. The point is to turn three continuous numbers into groups a
+commercial team can actually act on.
+
+## What I would recommend from this
+
+* **Protect Champions.** They are a small group carrying most of the revenue, so
+  a loyalty or early access programme aimed at them defends the core of the
+  business.
+* **Win back At Risk customers.** 824 previously frequent buyers worth £1.6M are
+  cooling off. A targeted re-engagement offer is cheaper than replacing that
+  revenue through acquisition.
+* **Fix first to second purchase.** With month one retention near 20 percent,
+  the largest leak is right after the first order. A welcome series or a second
+  purchase incentive would lift the whole retention curve.
+
+## Repository layout
+
+```
+customer-retention-rfm/
+  README.md
+  requirements.txt
+  run_analysis.py            full pipeline: clean, analyse, save figures
+  src/
+    preprocessing.py         load and clean the transactions
+    cohort.py                cohort retention matrix
+    rfm.py                   RFM scoring and segmentation
+    plotting.py              figures
+  sql/
+    01_create_tables.sql
+    02_monthly_revenue.sql
+    03_cohort_retention.sql  cohort retention in pure SQL
+    04_rfm_segments.sql      RFM with NTILE and window functions
+  dashboard/
+    app.py                   Streamlit dashboard
+  figures/                   generated by run_analysis.py
+  data/                      dataset downloaded here (see data/README.md)
+```
+
+## How to run
+
+```bash
+pip install -r requirements.txt
+
+# 1. download the data (see data/README.md), then
+python run_analysis.py          # cleans, analyses, writes figures and tables
+
+# 2. explore interactively
+streamlit run dashboard/app.py
+```
+
+The SQL files reproduce the monthly revenue, cohort retention and RFM
+segmentation directly against a relational table, for the case where the data
+lives in a warehouse rather than a spreadsheet.
+
+## Tech stack
+
+Python, pandas, NumPy, Matplotlib, Streamlit, SQL.
