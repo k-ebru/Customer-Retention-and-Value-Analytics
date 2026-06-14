@@ -58,7 +58,7 @@ st.subheader("Cohort retention (%)")
 heat = (retention.iloc[:, :13] * 100).round(0)
 heat.index = heat.index.astype(str)
 st.dataframe(
-    heat.style.background_gradient(cmap="Blues", axis=None).format("{:.0f}"),
+    heat.style.background_gradient(cmap="Blues", axis=None).format("{:.0f}", na_rep=""),
     use_container_width=True,
 )
 

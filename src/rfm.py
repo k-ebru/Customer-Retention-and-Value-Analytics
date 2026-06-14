@@ -24,10 +24,11 @@ def compute_rfm(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Quintile scores. Recency is reversed: recent buyers score highest.
-    rfm["R"] = pd.qcut(rfm["Recency"], 5, labels=[5, 4, 3, 2, 1]).astype(int)
-    # rank(method="first") breaks ties so frequency always splits into 5 bins.
+    # rank(method="first") breaks ties so every dimension splits into 5 bins
+    # even when many customers share the same value (common with Recency).
+    rfm["R"] = pd.qcut(rfm["Recency"].rank(method="first"), 5, labels=[5, 4, 3, 2, 1]).astype(int)
     rfm["F"] = pd.qcut(rfm["Frequency"].rank(method="first"), 5, labels=[1, 2, 3, 4, 5]).astype(int)
-    rfm["M"] = pd.qcut(rfm["Monetary"], 5, labels=[1, 2, 3, 4, 5]).astype(int)
+    rfm["M"] = pd.qcut(rfm["Monetary"].rank(method="first"), 5, labels=[1, 2, 3, 4, 5]).astype(int)
     rfm["RFM_Score"] = rfm[["R", "F", "M"]].sum(axis=1)
     rfm["Segment"] = rfm.apply(_segment, axis=1)
     return rfm

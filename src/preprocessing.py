@@ -33,6 +33,10 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
     df = df[~df["Invoice"].str.startswith("C")]
     df = df[(df["Quantity"] > 0) & (df["Price"] > 0)]
 
+    # Online Retail II has exact duplicate line items in the raw file. Drop
+    # them so revenue is not double counted.
+    df = df.drop_duplicates()
+
     df["CustomerID"] = df["CustomerID"].astype(int)
     df["InvoiceDate"] = pd.to_datetime(df["InvoiceDate"])
     df["Revenue"] = df["Quantity"] * df["Price"]
