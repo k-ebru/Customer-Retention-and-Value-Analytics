@@ -1,8 +1,4 @@
-"""Tests for the cleaning step.
-
-Each test builds a tiny DataFrame that targets one cleaning rule, so a
-failure points straight at the rule that broke.
-"""
+"""Tests for the cleaning step."""
 
 import pandas as pd
 

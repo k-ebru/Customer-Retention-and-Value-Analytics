@@ -1,23 +1,18 @@
-"""Tests for RFM scoring and segmentation.
-
-Includes a regression test for the qcut tie problem: if every customer
-shares the same Recency we still want to get five bins, not a crash.
-"""
+"""Tests for RFM scoring and segmentation."""
 
 import pandas as pd
 
 from src.rfm import compute_rfm, _segment, segment_summary
 
 
-def _make_df(n_customers=200, seed=0):
+def _make_df(n_customers=200):
     rng = pd.Series(range(n_customers))
-    df = pd.DataFrame({
+    return pd.DataFrame({
         "CustomerID": rng,
         "Invoice": [f"INV{i}" for i in rng],
         "InvoiceDate": pd.to_datetime("2011-01-01") + pd.to_timedelta(rng % 30, unit="D"),
         "Revenue": (rng + 1) * 1.5,
     })
-    return df
 
 
 def test_compute_rfm_has_all_columns():
@@ -35,8 +30,8 @@ def test_scores_are_between_1_and_5():
 
 
 def test_qcut_does_not_crash_with_tied_recency():
-    # All customers bought on the same day. Without rank() this used to raise
-    # "Bin edges must be unique" on the Recency column.
+    # All customers bought on the same day. qcut needs rank() here or it
+    # raises "Bin edges must be unique".
     df = pd.DataFrame({
         "CustomerID": range(50),
         "Invoice": [f"I{i}" for i in range(50)],

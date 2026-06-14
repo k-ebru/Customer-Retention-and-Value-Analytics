@@ -1,8 +1,4 @@
-"""Tests for cohort retention.
-
-The setup creates two customers with very different repeat patterns, so the
-retention matrix is small enough to check by hand.
-"""
+"""Tests for cohort retention."""
 
 import pandas as pd
 
