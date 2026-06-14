@@ -9,9 +9,13 @@ env/
 # Data (downloaded separately, see data/README.md)
 data/*.xlsx
 data/*.zip
+data/*.parquet
 
 # Generated outputs
 outputs/
+
+# pytest
+.pytest_cache/
 
 # OS / editor
 .DS_Store
